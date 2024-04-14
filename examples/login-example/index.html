@@ -1,0 +1,91 @@
+<html>
+    <head>
+		<meta charset='UTF-8' />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="format-detection" content="telephone=yes" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<title>Example - Login JWT</title>
+		
+		<style>
+
+* { padding:0; margin:0; touch-action:manipulation; outline:none; }
+
+pre { white-space:pre-wrap; }
+
+.btn-std {
+	padding:.5em 1em;
+	border:none;
+	border-radius:60px;
+	margin:.5em;
+	word-break: break-word;
+	cursor:pointer;
+	background-color:#eee4;
+	box-shadow: 2px 3px 10px #7777;
+}
+
+.login
+	{
+		padding:0 15%;
+		margin-top:1em;
+	}
+
+.login label
+	{
+		display:block;
+		text-align:left;
+		padding:10px 20px;
+	 }
+
+.login strong { display:block;padding:5px; }
+
+.login input
+	{
+		display:block;
+		padding:5px 10px;
+		width:100%;
+		border-radius:10px;
+		background:transparent;
+		border:1px solid #777;
+		transition:all .5s;
+	}
+	
+.login > pre
+	{
+		padding:10px;
+		font-size:12px;
+	}
+
+		</style>
+		
+		<script src="forge.min.js" ></script>
+		<script type="module" src="main.mjs" ></script>
+    </head>
+	<body>
+	
+		<div class="login">
+			<div class="form">
+				<label>
+					<strong>UserID</strong>
+					<input id="in-userid" value="user01" />
+				</label>
+				<label>
+					<strong>Secret (HS256)</strong>
+					<input type="password" id="in-secret" value="123456" />
+				</label>
+				<label>
+					<strong>PrivateKey (RS256)</strong>
+					<input type="file" id="in-privatekey" />
+				</label>
+			</div>	
+			<div>
+			
+				<p>Para o teste com HS256, digite o ID do usuário (user01) e a senha (123456).</p>
+				<button id="btn-access-hs256" class="btn-std">Acessar HS256</button>
+				
+				<p>Para o teste com RS256, digite o ID do usuário (user01) carregue o arquvio "privateKey.pem".</p>
+				<button id="btn-access-rs256" class="btn-std">Acessar RS256</button>
+			</div>
+		</div>
+		
+	</body>
+</html>
