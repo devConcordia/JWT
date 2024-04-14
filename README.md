@@ -25,11 +25,11 @@ No caso do uso de chave simetrica, o usuário informa seu id e seu segredo.
 ```javascript
 
 let head = new Object();
-	head.alg = "HS256";
-	head.kid = userId;
+    head.alg = "HS256";
+    head.kid = userId;
 
 let payload = new Object();
-	payload.expiry = Math.floor(Date.now()/1000) + 300;
+    payload.expiry = Math.floor(Date.now()/1000) + 300;
 
 let token = JSONWebToken.Create( secret, head, payload );
 
@@ -44,22 +44,22 @@ Além da chave correta `privateKey.pem`, tem uma chave falsa (`privateKey-fake.p
 ```
 
 let fileReader = new FileReader();
-	fileReader.onload = function() {
+    fileReader.onload = function() {
 
-		let head = new Object();
-			head.alg = "RS256";
-			head.kid = userId;
+        let head = new Object();
+            head.alg = "RS256";
+            head.kid = userId;
 
-		let payload = new Object();
-			payload.expiry = Math.floor(Date.now()/1000) + 300;
+        let payload = new Object();
+            payload.expiry = Math.floor(Date.now()/1000) + 300;
 
-		let privateKey = forge.pki.privateKeyFromPem( fileReader.result );
+        let privateKey = forge.pki.privateKeyFromPem( fileReader.result );
 
-		let token = JSONWebToken.Create( privateKey, head, payload );
+        let token = JSONWebToken.Create( privateKey, head, payload );
 
-	};
+    };
 	
-	fileReader.readAsText( inPrivateKey.files[0] );
+    fileReader.readAsText( inPrivateKey.files[0] );
 	
 ```
 
@@ -70,24 +70,24 @@ Ao iniciar a classe, o token será lido do `header` da requisição HTTP.
 A verificação é um processo de multiplas etapas, e se alguma delas falhar,
 a requsição será encerrada com o erro 401.
 
-```
+```php
 $token = new Auth\JSONWebToken();
 ```
 
 Para verificar a asinatura do token, prcisamos obter as chaves do usuário.
 Nesse exemplo, estamos salvando os dados do usuário como json no diretório *users*.
 
-```
+```php
 
 $path = "./users/". $token->head->kid .".json";
 $user = null;
 
 if( file_exists($path) )
-	$user = json_decode( file_get_contents( $path ) );
+    $user = json_decode( file_get_contents( $path ) );
 
 /// caso não encontre o usuario ou falhe a verificação
 if( !$user )
-	Auth\Response::Unauthorized( "USER_NOT_FOUND" );
+    Auth\Response::Unauthorized( "USER_NOT_FOUND" );
 	
 ```
 
@@ -95,20 +95,20 @@ Antes de verificar se o token é valido, precisamos
 identificar qual chave o usuário utilizou.
 Se for RSA, a chave precisa ser inciada utilizado `openssl_pkey_get_public`.
 
-```
+```php
 
 /// verifica se o algorithmo do token é RSA
 if( substr( $token->head->alg, 0, 2 ) == "RS" ) {
 	
-	$key = openssl_pkey_get_public( $user->publicKey );
+    $key = openssl_pkey_get_public( $user->publicKey );
 	
-	if( !$token->verifySignature( $key ) )
-		Auth\Response::Unauthorized( "ACCESS_DENIED" );
+    if( !$token->verifySignature( $key ) )
+        Auth\Response::Unauthorized( "ACCESS_DENIED" );
 
 } else {
 	
-	if( !$token->verifySignature( $user->secret ) )
-		Auth\Response::Unauthorized( "ACCESS_DENIED" );
+    if( !$token->verifySignature( $user->secret ) )
+        Auth\Response::Unauthorized( "ACCESS_DENIED" );
 
 }
 
@@ -116,17 +116,17 @@ if( substr( $token->head->alg, 0, 2 ) == "RS" ) {
 
 E por ultimo, verifica se o token possui a informação da validade e se já expirou.
 
-```
+```php
 
 /// verifica se expiry foi informado no payload
 if( isset($token->payload->expiry) ) {
 		
-	if( (time() - $token->payload->expiry) > 0 )
-		Auth\Response::Unauthorized( "EXPIRED_TOKEN" );
+    if( (time() - $token->payload->expiry) > 0 )
+        Auth\Response::Unauthorized( "EXPIRED_TOKEN" );
 	
 } else {
 	
-	Auth\Response::Unauthorized( "INVALID_TOKEN" );
+    Auth\Response::Unauthorized( "INVALID_TOKEN" );
 	
 }
 
