@@ -15,7 +15,7 @@ Os algortimos testados foram HMAC (para uso de chave simétrica) e RSA (para uso
 
 Algumas observações:
 - No `head` do JWT, utilizamos na propriedade `kid` (KeyID) para identificar as chaves do usuário.
-- No `payload`, definimos a propriedade `expiry`, que é o momente até que o token será valido. O valor deverá ser um *timestamp* em segundos.
+- No `payload`, definimos a propriedade `expiry`, que é o instante que token deixará de ser valido. O valor deverá ser um *timestamp* em segundos.
 
 
 ### HMAC
@@ -37,11 +37,12 @@ let token = JSONWebToken.Create( secret, head, payload );
 
 ### RSA
 
+No caso do uso de chave assimétricas, será preciso informar a cahve privada do usuário.
 No exemplo utilizamos um [HTMLInputELement](https://developer.mozilla.org/pt-BR/docs/Web/API/HTMLInputElement) com o `type` definido com *file* 
 e o [FileReader](https://developer.mozilla.org/pt-BR/docs/Web/API/FileReader) para obter a chave privada.
-Além da chave correta `privateKey.pem`, tem uma chave falsa (`privateKey-fake.pem`) para verificar se a validação está correta.
+Além da chave correta `privateKey.pem`, subi uma chave falsa (`privateKey-fake.pem`) para testar se a validação está correta.
 
-```
+```javascript
 
 let fileReader = new FileReader();
     fileReader.onload = function() {
@@ -66,15 +67,16 @@ let fileReader = new FileReader();
 
 ## Verificação
 
-Ao iniciar a classe, o token será lido do `header` da requisição HTTP.
 A verificação é um processo de multiplas etapas, e se alguma delas falhar,
 a requsição será encerrada com o erro 401.
+
+Ao iniciar a classe, o token será lido do `header` da requisição HTTP.
 
 ```php
 $token = new Auth\JSONWebToken();
 ```
 
-Para verificar a asinatura do token, prcisamos obter as chaves do usuário.
+Para verificar a assinatura do token, precisamos obter as chaves do usuário.
 Nesse exemplo, estamos salvando os dados do usuário como json no diretório *users*.
 
 ```php
@@ -91,9 +93,8 @@ if( !$user )
 	
 ```
 
-Antes de verificar se o token é valido, precisamos
-identificar qual chave o usuário utilizou.
-Se for RSA, a chave precisa ser inciada utilizado `openssl_pkey_get_public`.
+Antes de verificar se o token é valido, precisamos identificar o algoritimo utilizado.
+Se for RSA, a chave precisa ser inciada com `openssl_pkey_get_public`.
 
 ```php
 
@@ -114,7 +115,7 @@ if( substr( $token->head->alg, 0, 2 ) == "RS" ) {
 
 ```
 
-E por ultimo, verifica se o token possui a informação da validade e se já expirou.
+E por ultimo, verifica se o token possui a informação da validade ou se já expirou.
 
 ```php
 
